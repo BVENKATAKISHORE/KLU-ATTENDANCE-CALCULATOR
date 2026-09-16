@@ -118,16 +118,13 @@ function calculateSummary(values, targetPercent = 75) {
   const percentage = Number(((weightedAttended / weightedConducted) * 100).toFixed(2));
   const targetFraction = targetPercent / 100;
 
-  // Maximum additional standard (weight 1.0) classes that can be missed while staying >= target%
   const bunkToTarget = Math.max(0, Math.floor((weightedAttended - targetFraction * weightedConducted) / targetFraction));
 
-  // Extra fully-attended standard (weight 1.0) classes needed to reach target%
   const needForTarget =
     targetFraction === 1
       ? 0
       : Math.max(0, Math.ceil((targetFraction * weightedConducted - weightedAttended) / (1 - targetFraction)));
 
-  // Component-specific bunk allowances (since Practical weight = 0.5, Skill = 0.25)
   const componentBunks = {
     lecture: bunkToTarget,
     tutorial: bunkToTarget,
@@ -193,7 +190,7 @@ export default function App() {
   const [lastSummary, setLastSummary] = useState(null);
 
   // Absent simulation state
-  const [absentMode, setAbsentMode] = useState("percent"); // "percent" | "numbers"
+  const [absentMode, setAbsentMode] = useState("percent");
   const [absentInput, setAbsentInput] = useState({
     currentPercent: "82",
     totalClasses: "60",
@@ -231,11 +228,11 @@ export default function App() {
     ];
   });
 
-  const [subjectFilter, setSubjectFilter] = useState("all"); // "all" | "risk" | "safe"
+  const [subjectFilter, setSubjectFilter] = useState("all");
 
   // Export Modal state
   const [showExportModal, setShowExportModal] = useState(false);
-  const [exportSource, setExportSource] = useState("ltps"); // "ltps" | "subject" | "absent"
+  const [exportSource, setExportSource] = useState("ltps");
   const [isExporting, setIsExporting] = useState(false);
 
   // Toast feedback
@@ -249,7 +246,7 @@ export default function App() {
     setToasts((prev) => [...prev, { id, message, type }]);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 3800);
+    }, 3500);
   };
 
   useEffect(() => {
@@ -264,7 +261,6 @@ export default function App() {
     localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
   }, [history]);
 
-  // Recalculate summary on targetGoal change if data exists
   useEffect(() => {
     const hasValues = SECTION_CONFIG.some(
       (sec) => formData[sec.key].conducted !== "" && formData[sec.key].attended !== ""
@@ -403,7 +399,6 @@ export default function App() {
     addToast("History cleared", "info");
   };
 
-  // What-if simulated percentage
   const whatIfResult = useMemo(() => {
     if (!lastSummary || lastSummary.percentage === null || whatIfExtraAttended <= 0) return null;
     const newAttended = lastSummary.weightedAttended + whatIfExtraAttended;
@@ -413,7 +408,6 @@ export default function App() {
     return { newPct, gain };
   }, [lastSummary, whatIfExtraAttended]);
 
-  // Absent calculations
   const absentSummary = useMemo(() => {
     let t = 0;
     let currentAttended = 0;
@@ -462,7 +456,6 @@ export default function App() {
     const maxSafeAbsents75 = Math.max(0, Math.floor(currentAttended / 0.75 - t));
     const maxSafeAbsents85 = Math.max(0, Math.floor(currentAttended / 0.85 - t));
 
-    // Recovery classes needed after these absents to reach 75%
     const newConducted = t + totalAbsentsToTest;
     const recoverTo75 =
       newPercent >= 75
@@ -488,7 +481,6 @@ export default function App() {
     };
   }, [absentInput, absentMode]);
 
-  // Subject Stats
   const subjectStats = useMemo(() => {
     const computed = subjectRows
       .map((row) => {
@@ -569,20 +561,18 @@ export default function App() {
     return subjectRows;
   }, [subjectRows, subjectFilter]);
 
-  // Open Export Modal
   const handleOpenExport = (source = activeTab) => {
     setExportSource(source);
     setShowExportModal(true);
   };
 
-  // Generate Canvas from Export Card
   const generateCanvas = async () => {
     if (!exportCardRef.current) {
       throw new Error("Export card element not ready");
     }
 
     return await html2canvas(exportCardRef.current, {
-      scale: 3, // High Resolution Retina
+      scale: 3,
       backgroundColor: "#ffffff",
       useCORS: true,
       allowTaint: true,
@@ -598,7 +588,6 @@ export default function App() {
     });
   };
 
-  // Download Image
   const handleDownloadImage = async () => {
     try {
       setIsExporting(true);
@@ -613,7 +602,7 @@ export default function App() {
         }
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
-        link.download = `KLU-Attendance-Report-${studentProfile.regNo || "Student"}-${Date.now()}.png`;
+        link.download = `Attendance-Report-${studentProfile.regNo || "Student"}-${Date.now()}.png`;
         link.href = url;
         document.body.appendChild(link);
         link.click();
@@ -629,7 +618,6 @@ export default function App() {
     }
   };
 
-  // Copy Image to Clipboard
   const handleCopyImageToClipboard = async () => {
     try {
       if (!navigator.clipboard || !window.ClipboardItem) {
@@ -667,16 +655,14 @@ export default function App() {
     }
   };
 
-  // Print PDF
   const handleExportPdf = () => {
     window.print();
   };
 
-  // Share Text Summary
   const handleCopyTextSummary = () => {
     let text = "";
     if (exportSource === "ltps" && lastSummary && lastSummary.percentage !== null) {
-      text = `📊 *KLU Attendance Report* (${studentProfile.name || "Student"} - ${studentProfile.regNo || "ID"})\n` +
+      text = `📊 *Attendance Report* (${studentProfile.name || "Student"} - ${studentProfile.regNo || "ID"})\n` +
         `• Overall LTPS Attendance: *${lastSummary.percentage}%*\n` +
         `• Total Attended / Conducted: ${lastSummary.totalAttended} / ${lastSummary.totalConducted} classes\n` +
         `• Target (${targetGoal}%): ${lastSummary.percentage >= targetGoal ? `✅ Safe to miss ${lastSummary.bunkToTarget} classes` : `⚠️ Need to attend ${lastSummary.needForTarget} classes`}\n` +
@@ -690,14 +676,13 @@ export default function App() {
         subjectStats.rows.map((s) => `  - ${s.name}: ${s.percentage}% (${s.attended}/${s.net}) ${s.isSafe ? "✅" : "⚠️"}`).join("\n") +
         `\nGenerated on: ${new Date().toLocaleDateString()}`;
     } else {
-      text = `📊 *KLU Attendance Status*: Current Mode: ${activeTab.toUpperCase()}`;
+      text = `📊 *Attendance Status*: Current Mode: ${activeTab.toUpperCase()}`;
     }
 
     navigator.clipboard.writeText(text);
     addToast("Summary text copied to clipboard!", "success");
   };
 
-  // Backup data as JSON
   const handleExportJson = () => {
     const backup = {
       version: 2,
@@ -718,7 +703,6 @@ export default function App() {
     addToast("Backup JSON file saved", "success");
   };
 
-  // Import data from JSON
   const handleImportJson = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -782,7 +766,7 @@ export default function App() {
           <span className="brand-mark" aria-hidden="true">AC</span>
           <div className="brand-titles">
             <strong>ATTENDANCE CALCULATOR</strong>
-            <small>KLU Smart Academic Suite</small>
+            <small>Smart Academic Suite</small>
           </div>
         </div>
 
@@ -822,7 +806,7 @@ export default function App() {
       <section className="hero-card">
         <div className="hero-header-row">
           <div>
-            <p className="kicker">Official Academic Decision Support</p>
+            <p className="kicker">Academic Decision Support</p>
             <h1>ATTENDANCE CALCULATOR</h1>
             <p className="subtitle">
               Calculates precise weighted LTPS components, simulates future absence impacts,
@@ -895,7 +879,7 @@ export default function App() {
             <div>
               <h2>Smart Academic Attendance Intelligence</h2>
               <p>
-                Engineered specifically for engineering students following weighted curriculum models.
+                Engineered for engineering students following weighted curriculum models.
                 Get mathematically accurate forecasts, customized target planning, and shareable reports.
               </p>
               <div className="home-points">
@@ -955,7 +939,7 @@ export default function App() {
               <span className="badge-official">Accurate LTPS Weighting</span>
             </div>
             <p>
-              Traditional calculators assume all classes carry equal weight, leading to dangerous calculation errors.
+              Traditional calculators assume all classes carry equal weight, leading to calculation errors.
               This suite accounts for exact credit distributions:
             </p>
             <div className="faculty-grid">
@@ -977,7 +961,7 @@ export default function App() {
               <article>
                 <div className="grid-num">04</div>
                 <h3>Verified Export Reports</h3>
-                <p>Generate clean, professional, high-definition attendance certificates for faculty submission.</p>
+                <p>Generate clean, professional, high-definition attendance certificates.</p>
               </article>
             </div>
           </section>
@@ -1644,23 +1628,6 @@ export default function App() {
         )}
       </section>
 
-      {/* Footer & Educational Open-Source Notice */}
-      <footer className="app-footer">
-        <div className="footer-content">
-          <p className="footer-brand">
-            <strong>ATTENDANCE CALCULATOR</strong> — Built by B. Venkata Kishore
-          </p>
-          <p className="footer-disclaimer">
-            ⚖️ <em>Disclaimer:</em> This is an independent open-source student academic decision-support tool licensed under the MIT License. Designed for calculation and estimation purposes.
-          </p>
-          <div className="footer-meta">
-            <span>Open Source (MIT License)</span>
-            <span>•</span>
-            <span>Version 2.0 (2026)</span>
-          </div>
-        </div>
-      </footer>
-
       {/* ==================== EXPORT REPORT MODAL ==================== */}
       {showExportModal && (
         <div className="modal-overlay" onClick={() => !isExporting && setShowExportModal(false)}>
@@ -1689,7 +1656,7 @@ export default function App() {
                   <input
                     value={studentProfile.name}
                     onChange={(e) => setStudentProfile({ ...studentProfile, name: e.target.value })}
-                    placeholder="e.g. Venkata Kishore"
+                    placeholder="Student Name"
                   />
                 </label>
                 <label>
@@ -1713,7 +1680,7 @@ export default function App() {
                   <input
                     value={studentProfile.semester}
                     onChange={(e) => setStudentProfile({ ...studentProfile, semester: e.target.value })}
-                    placeholder="e.g. Semester 4 - 2026"
+                    placeholder="e.g. Semester 4"
                   />
                 </label>
               </div>
@@ -1752,13 +1719,13 @@ export default function App() {
                 ref={exportCardRef}
                 className="official-report-card"
               >
-                {/* Official Header */}
+                {/* Header */}
                 <div className="rep-header">
                   <div className="rep-brand">
                     <div className="rep-logo-box">KLU</div>
                     <div>
                       <h2 className="rep-institution">KONERU LAKSHMAIAH EDUCATION FOUNDATION</h2>
-                      <p className="rep-sub">Official Academic Attendance & Decision-Support Report</p>
+                      <p className="rep-sub">Academic Attendance & Decision-Support Report</p>
                     </div>
                   </div>
                   <div className="rep-stamp">
@@ -1964,14 +1931,14 @@ export default function App() {
                   </div>
                 )}
 
-                {/* Official Footer & Verification Hash */}
+                {/* Footer & Verification Hash */}
                 <div className="rep-footer">
                   <div className="rep-meta-left">
-                    <span>Generated via KLU Attendance Decision Suite</span>
-                    <small>System ID: KLU-DECISION-{Date.now().toString(36).toUpperCase()}</small>
+                    <span>Generated via Academic Attendance Decision Suite</span>
+                    <small>System ID: DECISION-{Date.now().toString(36).toUpperCase()}</small>
                   </div>
                   <div className="rep-sig">
-                    <span>Academic Status Verified</span>
+                    <span>Status Verified</span>
                   </div>
                 </div>
               </div>
