@@ -1644,6 +1644,23 @@ export default function App() {
         )}
       </section>
 
+      {/* Footer & Educational Open-Source Notice */}
+      <footer className="app-footer">
+        <div className="footer-content">
+          <p className="footer-brand">
+            <strong>ATTENDANCE CALCULATOR</strong> — Built by B. Venkata Kishore
+          </p>
+          <p className="footer-disclaimer">
+            ⚖️ <em>Disclaimer:</em> This is an independent open-source student academic decision-support tool licensed under the MIT License. Designed for calculation and estimation purposes.
+          </p>
+          <div className="footer-meta">
+            <span>Open Source (MIT License)</span>
+            <span>•</span>
+            <span>Version 2.0 (2026)</span>
+          </div>
+        </div>
+      </footer>
+
       {/* ==================== EXPORT REPORT MODAL ==================== */}
       {showExportModal && (
         <div className="modal-overlay" onClick={() => !isExporting && setShowExportModal(false)}>
@@ -1735,7 +1752,7 @@ export default function App() {
                 ref={exportCardRef}
                 className="official-report-card"
               >
-                {/* Official University Header */}
+                {/* Official Header */}
                 <div className="rep-header">
                   <div className="rep-brand">
                     <div className="rep-logo-box">KLU</div>

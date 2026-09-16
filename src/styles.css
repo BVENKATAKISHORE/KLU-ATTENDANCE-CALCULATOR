@@ -54,7 +54,7 @@ body {
 .page-shell {
   max-width: 1180px;
   margin: 0 auto;
-  padding: 16px 20px 60px;
+  padding: 16px 20px 40px;
   position: relative;
 }
 
@@ -377,7 +377,7 @@ body {
   line-height: 1.45;
 }
 
-/* Generic Panel Wrapper */
+/* Panels */
 .home-panel,
 .absent-panel,
 .subject-panel,
@@ -391,7 +391,7 @@ body {
   box-shadow: var(--shadow-md);
 }
 
-/* ==================== HOME PANEL ==================== */
+/* Home Panel */
 .home-panel {
   display: grid;
   grid-template-columns: 1.25fr 0.75fr;
@@ -759,7 +759,7 @@ body {
   font-size: 0.9rem;
 }
 
-/* Results Panel (Spans 2 cols) */
+/* Result Panel */
 .result-panel {
   grid-column: span 2;
   background: var(--card);
@@ -1750,7 +1750,53 @@ body {
   font-weight: 600;
 }
 
-/* ==================== TOAST NOTIFICATION STACK ==================== */
+/* ==================== FOOTER ==================== */
+.app-footer {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.footer-brand {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.footer-brand strong {
+  color: var(--primary);
+  letter-spacing: 0.03em;
+}
+
+.footer-disclaimer {
+  margin: 0;
+  max-width: 680px;
+  font-size: 0.76rem;
+  color: var(--ink-muted);
+  line-height: 1.5;
+}
+
+.footer-meta {
+  display: flex;
+  gap: 8px;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 4px;
+}
+
+/* ==================== TOAST NOTIFICATIONS ==================== */
 .toast-container {
   position: fixed;
   bottom: 24px;
@@ -2237,7 +2283,7 @@ body {
   cursor: not-allowed;
 }
 
-/* ==================== RESPONSIVE MEDIA QUERIES ==================== */
+/* Responsive Media Queries */
 @media (max-width: 900px) {
   .calculator-grid,
   .home-panel {
@@ -2297,7 +2343,7 @@ body {
   }
 }
 
-/* ==================== PRINT MEDIA STYLES ==================== */
+/* Print Media Styles */
 @media print {
   body {
     background: #ffffff !important;
@@ -2317,7 +2363,8 @@ body {
   .modal-header,
   .student-profile-editor,
   .export-source-bar,
-  .modal-actions-bar {
+  .modal-actions-bar,
+  .app-footer {
     display: none !important;
   }
   .modal-overlay {
